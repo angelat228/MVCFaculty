@@ -1,0 +1,95 @@
+﻿@model MVCFaculty.Models.Teacher
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h3>List of the courses by the selected teacher and additional info!</h3>
+
+<div>
+ 
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.FullName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.FullName)
+        </dd>
+       
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Degree)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Degree)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.AcademicRank)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.AcademicRank)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.OfficeNumber)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.OfficeNumber)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.HireDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.HireDate)
+        </dd>
+
+        <dd class="col-sm-10">
+            <table class="table">
+                <tr>
+                    <th>CourseID</th>
+                    <th>Course Title</th>
+                </tr>
+                @if (Model.Course1 != null)
+                {
+                    foreach (var item in Model.Course1)
+                    {
+
+                        <tr>
+                            <td>
+
+                                @Html.DisplayFor(modelItem => item.CourseID)
+                            </td>
+                            <td>
+                                <a asp-controller="Courses" asp-action="Details" asp-route-id="@item.CourseID">
+                                    @Html.DisplayFor(modelItem => item.Title)
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+
+                @if (Model.Course2 != null)
+                {
+                    foreach (var item in Model.Course2)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CourseID)
+                            </td>
+                            <td>
+                                <a asp-controller="Courses" asp-action="Details" asp-route-id="@item.CourseID">
+                                    @Html.DisplayFor(modelItem => item.Title)
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </table>
+        </dd>
+
+
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.TeacherId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

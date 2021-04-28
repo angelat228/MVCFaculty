@@ -1,0 +1,103 @@
+﻿@model MVCFaculty.Models.pom
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Teachers</h1>
+
+<p>
+    <a asp-action="Create">Add teacher</a>
+</p>
+<table class="table">
+    <form asp-action="Index" method="get">
+        <div class="form-actions no-color">
+            <p>
+                Filter Teachers by their First Name, Last Name, Degree or Academic Rank: <input type="text" name="search" value="@ViewData["CurrentFilter"]" />
+                <input type="submit" value="Search" /> |
+                <a asp-action="Index">Back to Full List</a>
+            </p>
+
+        </div>
+
+    </form>
+    <thead>
+        <tr>
+
+            <th>First Name </th>
+            <th>Last Name </th>
+            <th>Degree </th>
+            <th>Academic Rank </th>
+            <th>Office Number </th>
+            <th>Hire date</th>
+            <th>Courses</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Teachers)
+        {
+            string selectedRow = "";
+            if (item.TeacherId == (int?)ViewData["FirstTeacherId"])
+            {
+                selectedRow = "success";
+            }
+            if (item.TeacherId == (int?)ViewData["SecondTeacherId"])
+            {
+                selectedRow = "success";
+            }
+        <tr class="@selectedRow">
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastName)
+            </td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.Degree)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AcademicRank)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OfficeNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HireDate)
+            </td>
+            <td>
+                @if (item.Course1 != null)
+                {
+
+                    foreach (var course in item.Course1)
+                    {
+                        @course.CourseID @:  @course.Title <br />
+
+
+
+
+                    }
+
+                }
+                @if (item.Course2 != null)
+                {
+                    foreach (var course in item.Course2)
+                    {
+                        @course.CourseID @:  @course.Title <br />
+
+
+
+
+                    }
+                }
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.TeacherId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.TeacherId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.TeacherId">Delete</a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
