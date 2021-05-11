@@ -143,6 +143,9 @@ namespace MVCFaculty.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
+                    b.Property<string>("ProfilePicture")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("StudentId")
                         .IsRequired()
                         .HasColumnType("nvarchar(10)")
@@ -184,6 +187,9 @@ namespace MVCFaculty.Migrations
                     b.Property<string>("OfficeNumber")
                         .HasColumnType("nvarchar(10)")
                         .HasMaxLength(10);
+
+                    b.Property<string>("ProfilePicture")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("TeacherId");
 

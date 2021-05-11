@@ -23,7 +23,7 @@
     </form>
     <thead>
         <tr>
-
+            <th>Profile Picture</th>
             <th>First Name </th>
             <th>Last Name </th>
             <th>Degree </th>
@@ -47,6 +47,17 @@
                 selectedRow = "success";
             }
         <tr class="@selectedRow">
+
+            <td>
+                @{ if (item.ProfilePicture != null)
+                    {
+                        <img src="~/images/@item.ProfilePicture"
+                             class="rounded-circle"
+                             height="40" width="40"
+                             asp-append-version="true" />}
+                }
+            </td>
+
             <td>
                 @Html.DisplayFor(modelItem => item.FirstName)
             </td>
@@ -72,7 +83,15 @@
 
                     foreach (var course in item.Course1)
                     {
-                        @course.CourseID @:  @course.Title <br />
+                        @:  @course.Title <br />
+
+
+
+
+
+
+
+
 
 
 
@@ -84,7 +103,11 @@
                 {
                     foreach (var course in item.Course2)
                     {
-                        @course.CourseID @:  @course.Title <br />
+                        @:  @course.Title <br />
+
+
+
+
 
 
 
@@ -92,10 +115,12 @@
                     }
                 }
             </td>
+      
             <td>
                 <a asp-action="Edit" asp-route-id="@item.TeacherId">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.TeacherId">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.TeacherId">Delete</a>
+
             </td>
         </tr>
         }

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MVCFaculty.Migrations
 {
-    public partial class Initial : Migration
+    public partial class Inital : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -19,7 +19,8 @@ namespace MVCFaculty.Migrations
                     EnrollmentDate = table.Column<DateTime>(nullable: true),
                     AcquiredCredits = table.Column<int>(nullable: true),
                     CurrentSemestar = table.Column<int>(nullable: true),
-                    EducationLevel = table.Column<string>(maxLength: 25, nullable: true)
+                    EducationLevel = table.Column<string>(maxLength: 25, nullable: true),
+                    ProfilePicture = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -37,7 +38,8 @@ namespace MVCFaculty.Migrations
                     Degree = table.Column<string>(maxLength: 50, nullable: true),
                     AcademicRank = table.Column<string>(maxLength: 25, nullable: true),
                     OfficeNumber = table.Column<string>(maxLength: 10, nullable: true),
-                    HireDate = table.Column<DateTime>(nullable: true)
+                    HireDate = table.Column<DateTime>(nullable: true),
+                    ProfilePicture = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

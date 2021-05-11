@@ -21,15 +21,15 @@ namespace MVCFaculty.Data
             var students = new Student[]
             {
             new Student{StudentId="100",FirstName="Bart",LastName="Simpson", EnrollmentDate=DateTime.Parse("2000-09-01"),
-             AcquiredCredits=100, CurrentSemestar=6,EducationLevel="Primary education"},
+             AcquiredCredits=100, CurrentSemestar=6,EducationLevel="Primary education", ProfilePicture="https://upload.wikimedia.org/wikipedia/en/a/aa/Bart_Simpson_200px.png" },
             new Student{StudentId="101",FirstName="Ralph",LastName="Wiggum", EnrollmentDate=DateTime.Parse("2000-09-01"),
-             AcquiredCredits=100, CurrentSemestar=6,EducationLevel="Primary education"},
+             AcquiredCredits=100, CurrentSemestar=6,EducationLevel="Primary education", ProfilePicture="https://static.wikia.nocookie.net/simpsons/images/b/ba/Ralph_ballet_tapped_out.png/revision/latest?cb=20150808022743"},
             new Student{StudentId="102",FirstName="Nelson",LastName="Muntz", EnrollmentDate=DateTime.Parse("2000-09-01"),
-             AcquiredCredits=100, CurrentSemestar=6,EducationLevel="Primary education"},
+             AcquiredCredits=100, CurrentSemestar=6,EducationLevel="Primary education", ProfilePicture="https://upload.wikimedia.org/wikipedia/en/c/c6/Nelson_Muntz.PNG"},
             new Student{StudentId="103",FirstName="Jimbo",LastName="Jones", EnrollmentDate=DateTime.Parse("2000-09-01"),
-             AcquiredCredits=100, CurrentSemestar=6,EducationLevel="Primary education"},
+             AcquiredCredits=100, CurrentSemestar=6,EducationLevel="Primary education", ProfilePicture="http://4.bp.blogspot.com/-OhfCOqGz3pk/Tq2y4xCtwcI/AAAAAAAAAhY/bv8gpkJuJWM/s1600/Jimbo%252520%2528the%252520bully%2529%252520excited.png"},
             new Student{StudentId="104",FirstName="Martin",LastName="Prince", EnrollmentDate=DateTime.Parse("2000-09-01"),
-             AcquiredCredits=100, CurrentSemestar=6,EducationLevel="Primary education"},
+             AcquiredCredits=100, CurrentSemestar=6,EducationLevel="Primary education", ProfilePicture="https://static.wikia.nocookie.net/simpsons/images/4/46/Martin_Prince.png/revision/latest?cb=20201223183916"},
             };
 
             foreach (Student s in students)
@@ -44,13 +44,13 @@ namespace MVCFaculty.Data
             var teachers = new Teacher[]
             {
             new Teacher{ FirstName="Edna", LastName="Krabappel", Degree="Bachelor’s Degree", AcademicRank="Associate  professor",
-             OfficeNumber="111",HireDate=DateTime.Parse("1988-06-03")},
+             OfficeNumber="111",HireDate=DateTime.Parse("1988-06-03"), ProfilePicture="https://i.pinimg.com/originals/69/79/88/6979885b413c81abb2cec2b24d9a46fb.jpg"}, 
             new Teacher{ FirstName="Ned", LastName="Flanders", Degree="Doctorate Degree", AcademicRank=" Associate Professor",
-             OfficeNumber="505",HireDate=DateTime.Parse("1994-11-02")},
+             OfficeNumber="505",HireDate=DateTime.Parse("1994-11-02"), ProfilePicture="https://www.pngkit.com/png/full/41-416703_the-simpsons-ned-flanders-ned-flanders.png"},
             new Teacher{ FirstName="Elizabeth", LastName="Hoover", Degree="Bachelor’s Degree", AcademicRank="Professor",
-             OfficeNumber="223",HireDate=DateTime.Parse("1989-05-22")},
+             OfficeNumber="223",HireDate=DateTime.Parse("1989-05-22"), ProfilePicture="https://i.pinimg.com/originals/b7/4f/ae/b74faea8de35d22b703b6ae32f891a92.png"},
             new Teacher{ FirstName="Dewey", LastName="Largo", Degree="Doctorate Degree", AcademicRank="Professor",
-             OfficeNumber="305",HireDate=DateTime.Parse("1992-02-27")},
+             OfficeNumber="305",HireDate=DateTime.Parse("1992-02-27"), ProfilePicture="https://i.pinimg.com/originals/53/e5/15/53e51516a408e65f9226d4732599e759.png"},
         
             };
             foreach (Teacher t in teachers)

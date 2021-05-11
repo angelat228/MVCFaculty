@@ -21,10 +21,19 @@ namespace University.Controllers
         }
 
 
+        public async Task<IActionResult> GetCoursesByTeacher(int id)
+        {
+            var teacher = _context.Teachers.Where(m => m.TeacherId == id).FirstOrDefault();
+            ViewData["teacherFullName"] = teacher.FullName;
+            TempData["selectedTeacher"] = id.ToString();
+            var courses = _context.Courses.Where(s => s.FirstTeacherId == id || s.SecondTeacherId == id);
+            courses = courses.Include(c => c.FirstTeacher).Include(c => c.SecondTeacher);
+            return View(courses);
+        }
 
 
         // GET: Courses
-       
+
         public async Task<IActionResult> Index(string CourseSemester, string CourseProgramme, string SearchString)
         {
             IQueryable<Course> courses = _context.Courses.AsQueryable();
@@ -71,7 +80,8 @@ namespace University.Controllers
             var course = await _context.Courses
                 .Include(s => s.Enrollments)
             .ThenInclude(e => e.Student)
-        .AsNoTracking()
+         .Include(c => c.FirstTeacher)
+                .Include(p => p.SecondTeacher)
                 .FirstOrDefaultAsync(m => m.CourseID == id);
             if (course == null)
             {
@@ -82,13 +92,14 @@ namespace University.Controllers
         }
         public IActionResult Create()
         {
-            PopulateTeachersDropDownList1();
-            PopulateTeachersDropDownList2();
+            ViewData["FirstTeacherId"] = new SelectList(_context.Teachers, "TeacherId", "FullName");
+            ViewData["SecondTeacherId"] = new SelectList(_context.Teachers, "TeacherId", "FullName");
             return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CourseID, Title, Credits, Semester, Programme, EducationLevel, FirstTeacherId, SecondTeacherId")] Course course)
+
+        public async Task<IActionResult> Create([Bind("CourseID,Title,Credits,Semestar,Programme,EducationLevel,FirstTeacherId,SecondTeacherId")] Course course)
         {
             if (ModelState.IsValid)
             {
@@ -96,71 +107,61 @@ namespace University.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            PopulateTeachersDropDownList1(course.FirstTeacherId);
-            PopulateTeachersDropDownList2(course.SecondTeacherId);
-
+            ViewData["FirstTeacherID"] = new SelectList(_context.Set<Teacher>(), "Id", "FullName", course.FirstTeacherId);
+            ViewData["SecondTeacherID"] = new SelectList(_context.Set<Teacher>(), "Id", "FullName", course.SecondTeacherId);
             return View(course);
+        }
+        // GET: Courses/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            {
+                String s = null;
+                if (TempData["test"] != null)
+                    s = TempData["test"].ToString();
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                var course = _context.Courses.Where(m => m.CourseID == id)
+                    .Include(m => m.Enrollments).First();
+                if (course == null)
+                {
+                    return NotFound();
+                }
+
+                ViewData["FirstTeacherId"] = new SelectList(_context.Teachers, "TeacherId", "FullName", course.FirstTeacherId);
+                ViewData["SecondTeacherId"] = new SelectList(_context.Teachers, "TeacherId", "FullName", course.SecondTeacherId);
+                return View(course);
+            }
         }
 
 
-        // GET: Courses/Edit/5
-         public async Task<IActionResult> Edit(int? id)
-          {
-              if (id == null)
-              {
-                  return NotFound();
-              }
-
-              var course = _context.Courses.Where(m => m.CourseID == id)
-                  .Include(m => m.Enrollments).First();
-              if (course == null)
-              {
-                  return NotFound();
-              }
-              IEnumerable<Student> students = _context.Students.AsEnumerable();
-
-              ViewModel viewmodel = new ViewModel
-              {
-                  course = course,
-                  studentList = new MultiSelectList(students.AsEnumerable(), "ID", "FullName"),
-                  selectedStudents = (IEnumerable<long>)course.Enrollments.Select(m => m.StudentID)
-
-              };
-              PopulateTeachersDropDownList1(course.FirstTeacherId);
-              PopulateTeachersDropDownList2(course.SecondTeacherId);
-              return View(viewmodel);
-          }
-
         // POST: Courses/Edit/5
-
-        [HttpPost, ActionName("Edit")]
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, ViewModel viewmodel)
+        public async Task<IActionResult> Edit(int id, [Bind("CourseID,Title,Credits,Semestar,Programme,EducationLevel,FirstTeacherId,SecondTeacherId")] Course course)
         {
-            if (id != viewmodel.course.CourseID)
+            String s = null;
+            if (TempData["test"] != null)
+                s = TempData["test"].ToString();
+            if (id != course.CourseID)
             {
                 return NotFound();
             }
 
-            try
+            if (ModelState.IsValid)
             {
-                    _context.Update(viewmodel.course);
+                try
+                {
+                    _context.Update(course);
                     await _context.SaveChangesAsync();
-                    IEnumerable<long> listStudents = viewmodel.selectedStudents;
-                    IQueryable<Enrollment> toBeRemoved = _context.Enrollments.Where((s => !listStudents.Contains(s.StudentID) && s.CourseID == id));
-                    _context.Enrollments.RemoveRange(toBeRemoved);
-
-                    IEnumerable<long> existStudents = _context.Enrollments
-                        .Where(s => listStudents.Contains(s.StudentID) && s.CourseID == id).Select(s => s.StudentID);
-                    IEnumerable<long> newStudents = listStudents.Where(s => !existStudents.Contains(s));
-                    foreach (int studentID in newStudents)
-                        _context.Enrollments.Add(new Enrollment { StudentID = studentID, CourseID = id });
-                    await _context.SaveChangesAsync();
-
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CourseExists(viewmodel.course.CourseID))
+                    if (!CourseExists(course.CourseID))
                     {
                         return NotFound();
                     }
@@ -168,28 +169,16 @@ namespace University.Controllers
                     {
                         throw;
                     }
-
                 }
                 return RedirectToAction(nameof(Index));
             }
-
-        
-        private void PopulateTeachersDropDownList1(object selectedTeacher = null)
-        {
-            var teachersQuery = from d in _context.Teachers
-                                orderby d.FirstName
-                                select d;
-            ViewBag.FirstTeacherId = new SelectList(teachersQuery.AsNoTracking(), "TeacherId", "FullName", selectedTeacher);
-        }
-        private void PopulateTeachersDropDownList2(object selectedTeacher = null)
-        {
-            var teachersQuery = from d in _context.Teachers
-                                orderby d.FirstName
-                                select d;
-            ViewBag.SecondTeacherId = new SelectList(teachersQuery.AsNoTracking(), "TeacherId", "FullName", selectedTeacher);
+            ViewData["FirstTeacherId"] = new SelectList(_context.Teachers, "TeacherId", "FirstName", course.FirstTeacherId);
+            ViewData["SecondTeacherId"] = new SelectList(_context.Teachers, "TeacherId", "FirstName", course.SecondTeacherId);
+            return View(course);
         }
 
-        // GET: Courses/Delete/5
+     
+        // GET:  Courses/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -224,13 +213,11 @@ namespace University.Controllers
         }
 
 
-
-        [HttpPost]
-
         private bool CourseExists(int id)
         {
             return _context.Courses.Any(e => e.CourseID == id);
         }
+       
 
     }
 }

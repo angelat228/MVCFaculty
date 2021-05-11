@@ -1,0 +1,46 @@
+﻿@model IEnumerable<MVCFaculty.Models.Enrollment>
+
+@{
+    ViewData["Title"] = "Enrollments";
+}
+
+<h1>Courses by student @ViewData["studentName"]</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Course</th>
+            <th>Semester</th>
+            <th>Grade</th>
+            <th>Year</th>
+            <th>Finish date</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Course.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Semester)
+                </td>
+                <td>
+                    @item.Grade
+                </td>
+                <td>
+                    @item.Year
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FinishDate)
+                </td>
+
+                <td>
+                    <a asp-action="editByStudent" asp-route-id="@item.EnrollmentID">Edit &amp; Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,6 +1,11 @@
 ﻿@model IEnumerable<MVCFaculty.Models.Course>
+@{
+    ViewData["Title"] = "GetCourses";
+}
 
-<h4> @ViewData["TeacherName"]'s courses </h4>
+
+
+<h4>@ViewData["TeacherAcademicRank"] @ViewData["TeacherFullName"]'s courses </h4>
 <br />
 
 <table class="table">
@@ -27,6 +32,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.SecondTeacher)
             </th>
+
             <th></th>
         </tr>
     </thead>
@@ -56,7 +62,7 @@
                     @Html.DisplayFor(modelItem => item.SecondTeacher.FullName)
                 </td>
                 <td>
-                    <a asp-controller="Enrollments" asp-action="StudentCourse" asp-route-id="@item.CourseID">View Students</a>
+                    <a asp-controller="Enrollments" asp-action="GetStudentsByCourse" asp-route-id="@item.CourseID">Show Students</a>
                 </td>
             </tr>
         }

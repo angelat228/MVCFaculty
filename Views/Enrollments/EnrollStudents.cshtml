@@ -1,0 +1,54 @@
+﻿@model MVCFaculty.ViewModels.EnrollmentEditViewModel
+
+@{
+    ViewData["Title"] = "Enroll Students";
+}
+
+<h1>Enroll Students</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="enrollStudents">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Course.Title" class="control-label"></label>
+                <p>@Html.DisplayFor(model => model.Course.Title)</p>
+            </div>
+            <div class="form-group">
+                <label>Semester</label>
+                <input name="semester" class="form-control" />
+                @* <span asp-validation-for="Enrollment.Semestar" class="text-danger"></span>*@
+            </div>
+            <div class="form-group">
+                <label>Year</label>
+                <input name="year" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Students</label>
+                <select asp-for="SelectedStudents" class="form-control js-example-basic-multiple"
+                        asp-items="Model.StudentList"> </select>
+                <span asp-validation-for="SelectedStudents" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Enroll Students" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-controller="Courses" asp-action="Index">Back to Courses</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#SelectedStudents").select2();
+        });
+    </script>
+}

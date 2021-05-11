@@ -30,6 +30,10 @@ namespace MVCFaculty.Models
         [Display(Name = "Hire Date")]
         public DateTime? HireDate { get; set; }
 
+
+        public string ProfilePicture { get; set; }
+
+
         [Display(Name = "Full Name")]
        
         public string FullName

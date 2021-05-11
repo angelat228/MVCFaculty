@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -14,14 +17,16 @@ namespace MVCFaculty.Controllers
     public class TeachersController : Controller
     {
         private readonly MVCFacultyContext _context;
+        private  IWebHostEnvironment _webHostEnvironment { get;  }
 
-        public TeachersController(MVCFacultyContext context)
+        public TeachersController(MVCFacultyContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // GET: Teachers
-        public async Task<IActionResult> Index(int? id, int? courseID, string search)
+        public async Task<IActionResult> Index(long? id, long? courseID, string search)
         {
             var viewModel = new pom();
             viewModel.Teachers = await _context.Teachers
@@ -72,7 +77,7 @@ namespace MVCFaculty.Controllers
         }
 
         // GET: Teachers/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(long? id)
         {
             if (id == null)
             {
@@ -102,31 +107,51 @@ namespace MVCFaculty.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("TeacherId,FirstName,LastName,Degree,AcademicRank,OfficeNumber,HireDate")] Teacher teacher, string[] selectedCourses)
+        public async Task<IActionResult> Create(TeacherForm Vmodel)
         {
-            if (selectedCourses != null)
-            {
-                teacher.Course1 = new List<Course>();
-                foreach (var course in selectedCourses)
-                {
-                    var courseToAdd = new Course { FirstTeacherId = teacher.TeacherId, CourseID = int.Parse(course) };
-                    teacher.Course1.Add(courseToAdd);
-                }
-                teacher.Course2 = new List<Course>();
-                foreach (var course in selectedCourses)
-                {
-                    var courseToAdd = new Course { SecondTeacherId = teacher.TeacherId, CourseID = int.Parse(course) };
-                    teacher.Course2.Add(courseToAdd);
-                }
-            }
+           
             if (ModelState.IsValid)
             {
+
+
+                string uniqueFileName = UploadedFile(Vmodel);
+
+                Teacher teacher = new Teacher
+                {
+                    ProfilePicture = uniqueFileName,
+                    FirstName = Vmodel.FirstName,
+                    LastName = Vmodel.LastName,
+                    Degree = Vmodel.Degree,
+                    AcademicRank = Vmodel.AcademicRank,
+                    OfficeNumber = Vmodel.OfficeNumber,
+                    HireDate = Vmodel.HireDate,
+
+                    Course1 = Vmodel.Courses_first,
+                    Course2 = Vmodel.Courses_second
+                };
+
                 _context.Add(teacher);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+                return View();
+            }
 
-            return View(teacher);
+        private string UploadedFile(TeacherForm Vmodel)
+        {
+            string uniqueFileName = null;
+
+            if (Vmodel.ProfilePicture != null)
+            {
+                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
+                uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(Vmodel.ProfilePicture.FileName);
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    Vmodel.ProfilePicture.CopyTo(fileStream);
+                }
+            }
+            return uniqueFileName;
         }
 
         // GET: Teachers/Edit/5
@@ -137,54 +162,79 @@ namespace MVCFaculty.Controllers
                 return NotFound();
             }
 
-            var teacher = await _context.Teachers
-              .Include(c => c.Course1)
-                .Include(d => d.Course2)
-              .ThenInclude(i => i.Enrollments)
-              .ThenInclude(i => i.Student)
-              .AsNoTracking()
-              .FirstOrDefaultAsync(m => m.TeacherId == id);
+            var teacher = await _context.Teachers.FindAsync(id);
+
             if (teacher == null)
             {
                 return NotFound();
             }
-            return View(teacher);
-        }
 
+            TeacherForm vm = new TeacherForm
+            {
+                Id = teacher.TeacherId,
+                FirstName = teacher.FirstName,
+                LastName = teacher.LastName,
+                Degree = teacher.Degree,
+                AcademicRank = teacher.AcademicRank,
+                OfficeNumber = teacher.OfficeNumber,
+                HireDate = teacher.HireDate,
+                Courses_first = teacher.Course1,
+                Courses_second = teacher.Course2
+            };
+
+            return View(vm);
+
+        }
         // POST: Teachers/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPost(int? id)
+        public async Task<IActionResult> Edit(int id, TeacherForm Vmodel)
+             
         {
-            if (id == null)
+            if (id != Vmodel.Id)
             {
                 return NotFound();
             }
 
-            var teacherToUpdate = await _context.Teachers
-                .FirstOrDefaultAsync(c => c.TeacherId == id);
 
-            if (await TryUpdateModelAsync<Teacher>(teacherToUpdate,
-                "",
-                c => c.FirstName, c=>c.LastName, c => c.Degree, c => c.AcademicRank, c => c.OfficeNumber, c => c.HireDate))
+            if (ModelState.IsValid)
             {
                 try
                 {
+                    string uniqueFileName = UploadedFile(Vmodel);
+
+                    Teacher teacher = new Teacher
+                    {
+                        ProfilePicture = uniqueFileName,
+                        TeacherId = Vmodel.Id,
+                        FirstName = Vmodel.FirstName,
+                        LastName = Vmodel.LastName,
+                        Degree = Vmodel.Degree,
+                        AcademicRank = Vmodel.AcademicRank,
+                        OfficeNumber = Vmodel.OfficeNumber,
+                        HireDate = Vmodel.HireDate,
+                        Course1 = Vmodel.Courses_first,
+                        Course2 = Vmodel.Courses_second
+                    };
+                    _context.Update(teacher);
                     await _context.SaveChangesAsync();
                 }
-                catch (DbUpdateException /* ex */)
+                catch (DbUpdateConcurrencyException)
                 {
-                    //Log the error (uncomment ex variable name and write a log.)
-                    ModelState.AddModelError("", "Unable to save changes. " +
-                        "Try again, and if the problem persists, " +
-                        "see your system administrator.");
+                    if (!TeacherExists(Vmodel.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(teacherToUpdate);
+            return View(Vmodel);
         }
 
         // GET: Teachers/Delete/5
@@ -194,54 +244,33 @@ namespace MVCFaculty.Controllers
             {
                 return NotFound();
             }
-
             var teacher = await _context.Teachers
                 .FirstOrDefaultAsync(m => m.TeacherId == id);
             if (teacher == null)
             {
                 return NotFound();
             }
-
             return View(teacher);
+
         }
 
-        // POST: Teachers/Delete/5
+
+       // POST: Teachers/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            Teacher teacher = await _context.Teachers
-             .Include(i => i.Course1)
-             .Include(i => i.Course2)
-             .SingleAsync(i => i.TeacherId == id);
+             var teacher = await _context.Teachers.FindAsync(id);
 
-            var course = await _context.Courses
-                .Where(d => d.FirstTeacherId == id)
-                .Where(d => d.SecondTeacherId == id)
-                .ToListAsync();
-            course.ForEach(d => d.FirstTeacherId = 0);
-            course.ForEach(d => d.SecondTeacherId = 0);
-
-            _context.Teachers.Remove(teacher);
-
+             _context.Teachers.Remove(teacher);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
 
+        }
         private bool TeacherExists(int id)
         {
             return _context.Teachers.Any(e => e.TeacherId == id);
         }
-        // GET: Teachers/Courses/2
-        public async Task<IActionResult> Courses(int id)
-        {
-            var courses = _context.Courses.Where(c => c.FirstTeacherId == id || c.SecondTeacherId == id);
-            courses = courses.Include(t => t.FirstTeacher).Include(t => t.SecondTeacher);
 
-            ViewData["TeacherId"] = id;
-            ViewData["TeacherAcademicRank"] = _context.Teachers.Where(t => t.TeacherId == id).Select(t => t.AcademicRank).FirstOrDefault();
-            ViewData["TeacherName"] = _context.Teachers.Where(t => t.TeacherId == id).Select(t => t.FullName).FirstOrDefault();
-            return View(courses);
-        }
     }
 }

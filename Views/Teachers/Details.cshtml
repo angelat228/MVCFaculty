@@ -7,8 +7,16 @@
 <h3>List of the courses by the selected teacher and additional info!</h3>
 
 <div>
- 
+
     <hr />
+
+    @if (Model.ProfilePicture != null)
+    {
+        <img src="~/images/@Model.ProfilePicture"
+             height="300" width="300"
+             asp-append-version="true" />
+    }
+
     <dl class="row">
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.FullName)
@@ -16,7 +24,7 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.FullName)
         </dd>
-       
+
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Degree)
         </dt>

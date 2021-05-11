@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MVCFaculty.Migrations
 {
     [DbContext(typeof(MVCFacultyContext))]
-    [Migration("20210425230421_Initial")]
-    partial class Initial
+    [Migration("20210502224857_Inital")]
+    partial class Inital
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -145,6 +145,9 @@ namespace MVCFaculty.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
+                    b.Property<string>("ProfilePicture")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("StudentId")
                         .IsRequired()
                         .HasColumnType("nvarchar(10)")
@@ -186,6 +189,9 @@ namespace MVCFaculty.Migrations
                     b.Property<string>("OfficeNumber")
                         .HasColumnType("nvarchar(10)")
                         .HasMaxLength(10);
+
+                    b.Property<string>("ProfilePicture")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("TeacherId");
 

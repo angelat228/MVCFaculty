@@ -1,0 +1,82 @@
+﻿@model IEnumerable<MVCFaculty.Models.Enrollment>
+
+@{
+    ViewData["Title"] = "Enrollments";
+}
+
+<h3>Students enrolled in course @ViewData["courseName"]</h3>
+
+<form asp-controller="Enrollments" asp-action="getStudentsByCourse">
+    <p>
+        Choose a year: <input type="text" name="yearInt" value="" />
+        <input type="submit" value="Search" />
+    </p>
+</form>
+
+<table class="table">
+    <tr>
+        <th>Student</th>
+        <th>Semester</th>
+        <th>Grade</th>
+        <th>Year</th>
+        <th>Exam points</th>
+        <th>Seminal points</th>
+        <th>Project points</th>
+        <th>Additional points</th>
+        <th>Finish date</th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                <a asp-controller="Students" asp-action="Details" asp-route-id="@item.StudentID">
+
+                    @Html.DisplayFor(modelItem => item.Student.FullName)
+
+                </a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Semester)
+            </td>
+            <td>
+                @item.Grade
+            </td>
+            <td>
+                @item.Year
+            </td>
+            <td>
+                @item.ExamPoints
+            </td>
+            <td>
+                @item.SeminalPoints
+            </td>
+            <td>
+                @item.ProjectPoints
+            </td>
+            <td>
+                @item.AdditionalPoints
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FinishDate)
+            </td>
+            @if (item.FinishDate == null)
+            {
+                <td>
+                    <a asp-action="editByProfessor" asp-route-id="@item.EnrollmentID">Edit &amp; Details</a>
+                </td>
+            }
+            else
+            {
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.EnrollmentID">Details</a>
+                </td>
+            }
+        </tr>
+    }
+</table>
+
+<div>
+    <a asp-controller="Courses" asp-action="getCoursesByTeacher" asp-route-id="@ViewData["tch"]">Back</a>
+</div>

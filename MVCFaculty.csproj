@@ -9,6 +9,8 @@
     <Compile Remove="Migrations\20210424192355_Initial.Designer.cs" />
     <Compile Remove="Migrations\20210425212012_Initial.cs" />
     <Compile Remove="Migrations\20210425212012_Initial.Designer.cs" />
+    <Compile Remove="Migrations\20210502223339_Initial.cs" />
+    <Compile Remove="Migrations\20210502223339_Initial.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Migrations\" />
     <Folder Include="NewFolder\" />
   </ItemGroup>
 

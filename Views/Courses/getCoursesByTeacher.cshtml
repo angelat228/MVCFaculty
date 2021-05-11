@@ -1,0 +1,71 @@
+﻿
+@model IEnumerable<MVCFaculty.Models.Course>
+
+@{
+    ViewData["Title"] = "Courses";
+}
+<h1>Courses by teacher @ViewData["teacherFullName"]</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Title
+            </th>
+            <th>
+                Credits
+            </th>
+            <th>
+                Semester
+            </th>
+            <th>
+                Programme
+            </th>
+            <th>
+                EducationLevel
+            </th>
+            <th>
+                First Teacher
+            </th>
+            <th>
+                Second Teacher
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Credits)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Semester)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Programme)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EducationLevel)
+                </td>
+                <td>
+                    <a asp-controller="Teachers" asp-action="Details" asp-route-id="@item.FirstTeacherId">
+                        @Html.DisplayFor(modelItem => item.FirstTeacher.FullName)
+                    </a>
+                </td>
+                <td>
+                    <a asp-controller="Teachers" asp-action="Details" asp-route-id="@item.SecondTeacherId">
+                        @Html.DisplayFor(modelItem => item.SecondTeacher.FullName)
+                    </a>
+                </td>
+                <td>
+                    <a asp-controller="Enrollments" asp-action="getStudentsByCourse" asp-route-id="@item.CourseID">See Students</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
