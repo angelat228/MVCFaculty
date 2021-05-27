@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +21,7 @@ namespace University.Controllers
             _context = context;
         }
 
-
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> GetCoursesByTeacher(int id)
         {
             var teacher = _context.Teachers.Where(m => m.TeacherId == id).FirstOrDefault();
@@ -33,7 +34,7 @@ namespace University.Controllers
 
 
         // GET: Courses
-
+        [Authorize(Roles = "Admin, Teacher")]
         public async Task<IActionResult> Index(string CourseSemester, string CourseProgramme, string SearchString)
         {
             IQueryable<Course> courses = _context.Courses.AsQueryable();
@@ -69,7 +70,7 @@ namespace University.Controllers
         }
 
 
-
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(long? id)
         {
             if (id == null)
@@ -90,6 +91,7 @@ namespace University.Controllers
 
             return View(course);
         }
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["FirstTeacherId"] = new SelectList(_context.Teachers, "TeacherId", "FullName");
@@ -98,7 +100,7 @@ namespace University.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("CourseID,Title,Credits,Semestar,Programme,EducationLevel,FirstTeacherId,SecondTeacherId")] Course course)
         {
             if (ModelState.IsValid)
@@ -112,6 +114,7 @@ namespace University.Controllers
             return View(course);
         }
         // GET: Courses/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             {
@@ -142,6 +145,7 @@ namespace University.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("CourseID,Title,Credits,Semestar,Programme,EducationLevel,FirstTeacherId,SecondTeacherId")] Course course)
         {
             String s = null;
@@ -177,8 +181,9 @@ namespace University.Controllers
             return View(course);
         }
 
-     
+
         // GET:  Courses/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -204,6 +209,7 @@ namespace University.Controllers
         // POST: Courses/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var course = await _context.Courses.FindAsync(id);

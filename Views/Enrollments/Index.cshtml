@@ -1,11 +1,14 @@
 ﻿@model IEnumerable<MVCFaculty.Models.Enrollment>
 
 @{
-    ViewData["Title"] = "Enrollments";
+    ViewData["Title"] = "Index";
 }
 
 <h1>Enrollments</h1>
 
+<p>
+    <a asp-action="CreateEnrollment">Enroll</a>
+</p>
 <table class="table">
     <thead>
         <tr>
@@ -19,10 +22,28 @@
                 @Html.DisplayNameFor(model => model.Semester)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Year)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Grade)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Year)
+                @Html.DisplayNameFor(model => model.SeminalUrl)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProjectUrl)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ExamPoints)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SeminalPoints)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProjectPoints)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AdditionalPoints)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.FinishDate)
@@ -35,41 +56,47 @@
         {
             <tr>
                 <td>
-                    <a asp-controller="Courses" asp-action="Details" asp-route-id="@item.CourseID">
-                        @Html.DisplayFor(modelItem => item.Course.Title)
-                    </a>
+                    @Html.DisplayFor(modelItem => item.Course.Title)
                 </td>
                 <td>
-                    <a asp-controller="Students" asp-action="Details" asp-route-id="@item.StudentID">
-                        @Html.DisplayFor(modelItem => item.Student.FullName)
-                    </a>
+                    @Html.DisplayFor(modelItem => item.Student.FullName)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Semester)
                 </td>
                 <td>
+                    @Html.DisplayFor(modelItem => item.Year)
+                </td>
+                <td>
                     @Html.DisplayFor(modelItem => item.Grade)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Year)
+                    @Html.DisplayFor(modelItem => item.SeminalUrl)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProjectUrl)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ExamPoints)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SeminalPoints)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProjectPoints)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AdditionalPoints)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.FinishDate)
                 </td>
                 <td>
-                    @if (item.FinishDate == null)
-                    {
-                        <a asp-action="Edit" asp-route-id="@item.EnrollmentID">Unenroll</a>
-                        <label>|</label>
-                    }
+                    <a asp-action="Edit" asp-route-id="@item.EnrollmentID">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.EnrollmentID">Details</a> |
                     <a asp-action="Delete" asp-route-id="@item.EnrollmentID">Delete</a>
-</tr>
+                </td>
+            </tr>
         }
     </tbody>
 </table>
-
-
-<p>
-    <a asp-controller="Courses" asp-action="Index">Back to Courses</a>
-</p>

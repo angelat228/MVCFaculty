@@ -1,29 +1,21 @@
-﻿@model MVCFaculty.ViewModels.EnrollmentEditViewModel
+﻿
+@model MVCFaculty.ViewModels.StudentsCoursesEnrollViewModel
 
 @{
-    ViewData["Title"] = "Enroll Students";
+    ViewData["Title"] = "EnrollStudents";
 }
 
-<h1>Enroll Students</h1>
+<h1>Enrolled Students</h1>
 
-<hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="enrollStudents">
+        <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Course.Title" class="control-label"></label>
-                <p>@Html.DisplayFor(model => model.Course.Title)</p>
+                <label asp-for="Course" class="control-label"></label>
+                <select asp-for="Course" class="form-control" asp-items="Model.CourseList"></select>
             </div>
-            <div class="form-group">
-                <label>Semester</label>
-                <input name="semester" class="form-control" />
-                @* <span asp-validation-for="Enrollment.Semestar" class="text-danger"></span>*@
-            </div>
-            <div class="form-group">
-                <label>Year</label>
-                <input name="year" class="form-control" />
-            </div>
+
             <div class="form-group">
                 <label class="control-label">Students</label>
                 <select asp-for="SelectedStudents" class="form-control js-example-basic-multiple"
@@ -32,23 +24,63 @@
             </div>
 
             <div class="form-group">
-                <input type="submit" value="Enroll Students" class="btn btn-primary" />
+                <label asp-for="Enrollment.Semester" class="control-label"></label>
+                <input asp-for="Enrollment.Semester" class="form-control" />
+                <span asp-validation-for="Enrollment.Semester" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Enrollment.Year" class="control-label"></label>
+                <input asp-for="Enrollment.Year" class="form-control" />
+                <span asp-validation-for="Enrollment.Year" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-controller="Courses" asp-action="Index">Back to Courses</a>
+    <a asp-controller="Enrollments" asp-action="Index">Назад кон запишани студенти</a>
+</div>
+<!--
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <h4>@Html.DisplayFor(model => model.Course.Title)</h4>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Семестар (Format example: 2017/18 W)</label>
+                <input asp-for="SelectedSemester" class="form-control" />
+                <span asp-validation-for="SelectedSemester" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SelectedYear" class="control-label"></label>
+                <select asp-for="SelectedYear" asp-items="Model.YearList">
+                    <option value="">All</option>
+                </select>
+                <span asp-validation-for="SelectedYear" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Студенти</label>
+                <select asp-for="SelectedStudents" class="form-control js-example-basic-multiple"
+                        asp-items="Model.StudentList"> </select>
+                <span asp-validation-for="SelectedStudents" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="EnrollStudents" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>-->
+
+<div>
+    <a asp-controller="Enrollments" asp-action="Index">Назад</a>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            $("#SelectedStudents").select2();
-        });
-    </script>
 }

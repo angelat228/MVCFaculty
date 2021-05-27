@@ -9,6 +9,7 @@ using MVCFaculty.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using System.Threading.Tasks;
 
 namespace MVCFaculty
@@ -25,7 +26,8 @@ namespace MVCFaculty
                 try
                 {
                     var context = services.GetRequiredService<MVCFacultyContext>();
-                    DbInitializer.Initialize(context);
+                    context.Database.Migrate();
+                    SeedData.Initialize(services);
                 }
                 catch (Exception ex)
                 {

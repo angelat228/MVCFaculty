@@ -1,0 +1,39 @@
+﻿@model IEnumerable<MVCFaculty.Areas.Identity.Data.MVCFacultyUSER>
+
+<h1> All Users </h1>
+<div class="form-group">
+    <a asp-action="Create" class="btn btn-primary">Create a User</a>
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Account ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Update</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (MVCFaculty.Areas.Identity.Data.MVCFacultyUSER user in Model)
+        {
+<tr>
+    <td>@user.Id</td>
+    <td>@user.UserName</td>
+    <td>@user.Email</td>
+    <td>
+        <a class="btn btn-sm btn-primary" asp-action="Update" asp-route-id="@user.Id">
+            Update
+        </a>
+    </td>
+    <td>
+        <form asp-action="Delete" asp-route-id="@user.Id" method="post">
+            <button type="submit" class="btn btn-sm btn-danger">
+                Delete
+            </button>
+        </form>
+    </td>
+</tr>}
+    </tbody>
+
+</table>

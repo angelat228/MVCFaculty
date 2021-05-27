@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using MVCFaculty.Areas.Identity.Data;
 using MVCFaculty.Models;
 
 namespace MVCFaculty.Data
 {
-    public class MVCFacultyContext : DbContext
+    public class MVCFacultyContext : IdentityDbContext<MVCFacultyUSER>
     {
         public MVCFacultyContext(DbContextOptions<MVCFacultyContext> options)
             : base(options)
@@ -14,6 +16,7 @@ namespace MVCFaculty.Data
         public DbSet<Enrollment> Enrollments { get; set; }
         public DbSet<Student> Students { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

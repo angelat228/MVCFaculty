@@ -13,6 +13,7 @@ using MVCFaculty.Models;
 using MVCFaculty.ViewModels;
 using Microsoft.AspNetCore.Http;
 using University.Controllers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MVCFaculty.Controllers
 {
@@ -27,7 +28,7 @@ namespace MVCFaculty.Controllers
             _context = context;
             WebHostEnvironment = webHostEnvironment;
         }
-
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> GetStudentsByCourse(int id, int? yearInt = 0)
         {
             var course = _context.Courses.Where(l => l.CourseID == id).FirstOrDefault();
@@ -47,6 +48,7 @@ namespace MVCFaculty.Controllers
             ViewData["currentYear"] = yearInt;
             return View(enrollments);
         }
+        [Authorize(Roles = "Teacher")]
 
         public async Task<IActionResult> EditByProfessor(int? id)
         {
@@ -72,6 +74,7 @@ namespace MVCFaculty.Controllers
 
         [HttpPost, ActionName("editByProfessor")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> EditByProfessorPost(int? id)
         {
             if (id == null)
@@ -122,7 +125,7 @@ namespace MVCFaculty.Controllers
             }
             return uniqueFileName;
         }
-
+        [Authorize(Roles = "Student")]
         public async Task<IActionResult> EditByStudent(int? id)
         {
             if (id == null)
@@ -146,6 +149,7 @@ namespace MVCFaculty.Controllers
 
         [HttpPost, ActionName("editByStudent")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Student")]
         public async Task<IActionResult> EditByStudentPost(int? id, IFormFile semUrl)
         {
             if (id == null)
@@ -182,7 +186,7 @@ namespace MVCFaculty.Controllers
             return View(enrollmentToUpdate);
         }
 
-
+        [Authorize(Roles = "Student")]
         public async Task<IActionResult> GetCoursesByStudent(int id)
         {
             TempData["selectedStudent"] = id.ToString();
@@ -193,6 +197,7 @@ namespace MVCFaculty.Controllers
             return View(enrollments);
         }
         // GET: Enrollments
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             var rSWEBproektContext = _context.Enrollments.Include(e => e.Course).Include(e => e.Student);
@@ -200,6 +205,7 @@ namespace MVCFaculty.Controllers
         }
 
         // GET: Enrollments/Details/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -222,7 +228,7 @@ namespace MVCFaculty.Controllers
 
             return View(enrollment);
         }
-
+        /*
         public async Task<IActionResult> EnrollStudents(int? id)
         {
             if (id == null)
@@ -277,8 +283,9 @@ namespace MVCFaculty.Controllers
                 return RedirectToAction(nameof(CoursesController.Index));
             }
             return View(viewModel);
-        }
+        }*/
         // GET: Enrollments/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["CourseID"] = new SelectList(_context.Courses, "CourseID", "Title");
@@ -288,6 +295,7 @@ namespace MVCFaculty.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("EnrollmentID,CourseID,StudentID,Semestar,Grade,Year,SeminalUrl,ProjectUrl,ExamPoints,SeminalPoints,ProjectPoints,AdditionalPoints,FinishDate")] Enrollment enrollment)
         {
             if (ModelState.IsValid)
@@ -302,6 +310,7 @@ namespace MVCFaculty.Controllers
         }
 
         // GET: Enrollments/Edit/5
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -324,6 +333,7 @@ namespace MVCFaculty.Controllers
 
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> EditPost(int? id)
         {
             if (id == null)
@@ -352,7 +362,9 @@ namespace MVCFaculty.Controllers
             return View(enrollmentToUpdate);
         }
 
+
         // GET: Enrollments/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -375,6 +387,7 @@ namespace MVCFaculty.Controllers
         // POST: Enrollments/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var enrollment = await _context.Enrollments.FindAsync(id);
@@ -387,5 +400,136 @@ namespace MVCFaculty.Controllers
         {
             return _context.Enrollments.Any(e => e.EnrollmentID == id);
         }
+
+        //GET: Enrollments/CreateEnrollment
+        [Authorize(Roles = "Admin")]
+        public IActionResult CreateEnrollment()
+        {
+            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Title");
+            ViewData["StudentId"] = new SelectList(_context.Students, "Id", "FullName");
+            return View();
+        }
+
+        //POST: Enrollments/CreateEnrollment
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateEnrollment([Bind("Id,CourseId,StudentId, Semester,Year")] Enrollment enrollment)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(enrollment);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(EnrollmentList));
+            }
+            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Title", enrollment.CourseID);
+            ViewData["StudentId"] = new SelectList(_context.Students, "Id", "FullName", enrollment.StudentID);
+            return View(enrollment);
+        }
+
+        // GET: Enrollments/FinishEnrollment/5
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> FinishEnrollment(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var enrollment = await _context.Enrollments.FindAsync(id);
+            if (enrollment == null)
+            {
+                return NotFound();
+            }
+            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Title", enrollment.CourseID);
+            ViewData["StudentId"] = new SelectList(_context.Students, "Id", "FullName", enrollment.StudentID);
+            return View(enrollment);
+        }
+
+        // POST: Enrollments/FinishEnrollment/5
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> FinishEnrollment(int id, [Bind("Id,CourseId,StudentId,Semester,Year,Grade,SeminalUrl,ProjectUrl,ExamPoints,SeminalPoints,ProjectPoints,AdditionalPoints,FinishDate")] Enrollment enrollment)
+        {
+            if (id != enrollment.EnrollmentID)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(enrollment);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!EnrollmentExists(enrollment.EnrollmentID))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(EnrollmentList));
+            }
+            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Title", enrollment.CourseID);
+            ViewData["StudentId"] = new SelectList(_context.Students, "Id", "FullName", enrollment.StudentID);
+            return View(enrollment);
+        }
+
+        private bool EnrollmentExists(long enrollmentID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IActionResult> EnrollmentList()
+        {
+            var universityContext = _context.Enrollments.Include(e => e.Course).Include(e => e.Student);
+            return View(await universityContext.ToListAsync());
+        }
+
+        public IActionResult EnrollStudents()
+        {
+            IEnumerable<Student> students = _context.Students.AsEnumerable();
+            students = students.OrderBy(s => s.FullName);
+            IEnumerable<Course> courses = _context.Courses.AsEnumerable();
+            courses = courses.OrderBy(s => s.Title);
+
+            StudentsCoursesEnrollViewModel viewModel = new StudentsCoursesEnrollViewModel
+            {
+                StudentList = new MultiSelectList(students.AsEnumerable(), "Id", "FullName"),
+                CourseList = new SelectList(courses.AsEnumerable(), "Id", "Title")
+            };
+            return View(viewModel);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EnrollStudents(StudentsCoursesEnrollViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                Course course = viewModel.Course;
+                var courseId = course.CourseID;
+                IEnumerable<SelectListItem> listCourses = viewModel.CourseList;
+                IEnumerable<int> listStudents = viewModel.SelectedStudents;
+                foreach (int studentId in listStudents)
+                    _context.Enrollments.Add(new Enrollment { StudentID= studentId, CourseID = courseId });
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(viewModel);
+        }
+
+
+
     }
 }
